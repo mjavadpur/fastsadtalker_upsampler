@@ -79,12 +79,12 @@ def enhancer_generator_no_len(images, method='gfpgan', bg_upsampler='realesrgan'
             import warnings
             warnings.warn('The unoptimized RealESRGAN is slow on CPU. We do not use it. '
                           'If you really want to use it, please modify the corresponding codes.')
-            bg_upsampler = None
+            upsampler = None
         else:
             from basicsr.archs.rrdbnet_arch import RRDBNet
             from realesrgan import RealESRGANer
             model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=2)
-            bg_upsampler = RealESRGANer(
+            upsampler = RealESRGANer(
                 scale=2,
                 model_path='https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth',
                 model=model,
@@ -93,9 +93,9 @@ def enhancer_generator_no_len(images, method='gfpgan', bg_upsampler='realesrgan'
                 pre_pad=0,
                 half=True)  # need to set False in CPU mode
     else:
-        bg_upsampler = None
+        upsampler = None
 
-    if model_name:
+    if model_name != None:
         # determine model paths
         model_path = os.path.join('gfpgan/weights', model_name + '.pth')
         
@@ -111,7 +111,7 @@ def enhancer_generator_no_len(images, method='gfpgan', bg_upsampler='realesrgan'
             upscale=2,
             arch=arch,
             channel_multiplier=channel_multiplier,
-            bg_upsampler=bg_upsampler)
+            bg_upsampler=upsampler)
 
         # ------------------------ restore ------------------------
         for idx in tqdm(range(len(images)), 'Face Enhancer:'):
@@ -127,15 +127,15 @@ def enhancer_generator_no_len(images, method='gfpgan', bg_upsampler='realesrgan'
             
             r_img = cv2.cvtColor(r_img, cv2.COLOR_BGR2RGB)
             yield r_img
-    elif bg_upsampler:
+    elif bg_upsampler == 'realesrgan':
         for idx in tqdm(range(len(images)), 'Full image Enhancer:'):
             
             img = cv2.cvtColor(images[idx], cv2.COLOR_RGB2BGR)
             
             # restore faces and background if necessary
-            r_img, _ = bg_upsampler.enhance(img, outscale=outscale)
+            r_img, _ = upsampler.enhance(img, outscale=outscale)
             # cropped_faces, restored_faces, r_img = restorer.enhance(
-            #     img,
+            #     img, 
             #     has_aligned=False,
             #     only_center_face=False,
             #     paste_back=True)
@@ -143,6 +143,6 @@ def enhancer_generator_no_len(images, method='gfpgan', bg_upsampler='realesrgan'
             r_img = cv2.cvtColor(r_img, cv2.COLOR_BGR2RGB)
             yield r_img
             
-        else:
-            raise ValueError(f'Wrong enhancer model version {method} and background_enhancer model {bg_upsampler}.')
+        # else:
+        #     raise ValueError(f'Wrong enhancer model version {method} and background_enhancer model {bg_upsampler}.')
             

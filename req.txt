@@ -20,3 +20,5 @@ gradio
 gfpgan
 av
 safetensors
+moviepy
+realesrgan
