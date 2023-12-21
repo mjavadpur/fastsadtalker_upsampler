@@ -163,7 +163,8 @@ if __name__ == '__main__':
     parser.add_argument('--input_pitch', nargs='+', type=int, default=None, help="the input pitch degree of the user")
     parser.add_argument('--input_roll', nargs='+', type=int, default=None, help="the input roll degree of the user")
     parser.add_argument('--enhancer',  type=str, default=None, help="Face enhancer, [gfpgan, RestoreFormer, CodeFormer]")
-    parser.add_argument('--background_enhancer',  type=str, default=None, help="background enhancer, [realesrgan]")
+    parser.add_argument('--background_enhancer',  type=str, default=None, 
+                        help="background enhancer, [RealESRGAN_x4plus, RealESRNet_x4plus, RealESRGAN_x4plus_anime_6B, RealESRGAN_x2plus, realesr-animevideov3, realesr-general-x4v3]")
     parser.add_argument("--cpu", dest="cpu", action="store_true") 
     parser.add_argument("--face3dvis", action="store_true", help="generate 3d face and 3d landmarks") 
     parser.add_argument("--still", action="store_true", help="can crop back to the original videos for the full body aniamtion") 
