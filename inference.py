@@ -1,7 +1,7 @@
 from glob import glob
 import shutil
 import torch
-from time import  strftime
+from time import  strftime, perf_counter
 import os, sys, time
 from argparse import ArgumentParser
 
@@ -19,6 +19,7 @@ os.environ ['CUDA_VISIBLE_DEVICES'] = '0, 1'
 
 def main(args):
 
+    start_inf = perf_counter()
     #torch.backends.cudnn.enabled = False
     pic_path = args.source_image
     audio_path = args.driven_audio
@@ -110,18 +111,18 @@ def main(args):
     render_end = time.time()
 
 
-    torch.cuda.synchronize() 
-    interpolate_start = time.time()
-    # add interpolate to final generated video
-    interpolate_result = "./interpolate_videos.mp4"
-    interpolate_video(result, interpolate_result, factor=2)  # Interpolate Time: 0.8898725509643555
-    # optical_flow_interpolation(result, interpolate_result, factor=2) # Interpolate Time: 4.715899467468262
-    # interpolate_frames_by_ffmpeg(result, interpolate_result, factor=2)
-    torch.cuda.synchronize() 
-    interpolate_end = time.time()
-    print(f"Interpolated result is located in {interpolate_result}.")
+    # torch.cuda.synchronize() 
+    # interpolate_start = time.time()
+    # # add interpolate to final generated video
+    # interpolate_result = "./interpolate_videos.mp4"
+    # interpolate_video(result, interpolate_result, factor=2)  # Interpolate Time: 0.8898725509643555
+    # # optical_flow_interpolation(result, interpolate_result, factor=2) # Interpolate Time: 4.715899467468262
+    # # interpolate_frames_by_ffmpeg(result, interpolate_result, factor=2)
+    # torch.cuda.synchronize() 
+    # interpolate_end = time.time()
+    # print(f"Interpolated result is located in {interpolate_result}.")
 
-    shutil.move(interpolate_result, save_dir+'.mp4')
+    shutil.move(result, save_dir+'.mp4')
     # shutil.move(result, save_dir+'.mp4')
     print('The generated video is named:', save_dir+'.mp4')
 
@@ -133,15 +134,17 @@ def main(args):
     extract_list.append(extract_end - extract_start)
     gen_list.append(gen_end - gen_start)
     render_list.append(render_end - render_start)
-    Interpolate_list.append(interpolate_end - interpolate_start)
+    # Interpolate_list.append(interpolate_end - interpolate_start)
     print('Extract Time: {}'.format(extract_end - extract_start))
     print('Gen Coeff Time: {}'.format(gen_end - gen_start))
     print('Render Time: {}'.format(render_end - render_start))
-    print('Interpolated Time: {}'.format(interpolate_end - interpolate_start))
+    # print('Interpolated Time: {}'.format(interpolate_end - interpolate_start))
 
     if add_silent_both_slides:
         # remove tmp_file
         os.remove(output_path)
+    end_inf = perf_counter()
+    print('Inference Time: {}'.format(end_inf - start_inf))
 
 
 if __name__ == '__main__':
