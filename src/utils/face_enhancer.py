@@ -55,32 +55,33 @@ def enhancer_generator_no_len(images, method='gfpgan', bg_upsampler='realesrgan'
         images = load_video_to_cv2(images)
 
     # ------------------------ set up GFPGAN restorer ------------------------
-    if  method == 'gfpgan':
-        arch = 'clean'
-        channel_multiplier = 2
-        model_name = 'GFPGANv1.4'
-        url = 'https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.4.pth'
-    elif method == 'RestoreFormer':
-        arch = 'RestoreFormer'
-        channel_multiplier = 2
-        model_name = 'RestoreFormer'
-        url = 'https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/RestoreFormer.pth'
-    elif method == 'codeformer': # TODO:
-        arch = 'CodeFormer'
-        channel_multiplier = 2
-        model_name = 'CodeFormer'
-        url = 'https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth'
-    else:
-        arch = None
-        channel_multiplier = 2
-        model_name = None
-        url = None
-        # raise ValueError(f'Wrong model version {method}.')
+    if method != None:
+        if  method.lower() == 'gfpgan':
+            arch = 'clean'
+            channel_multiplier = 2
+            model_name = 'GFPGANv1.4'
+            url = 'https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.4.pth'
+        elif method.lower() == 'restoreformer':
+            arch = 'RestoreFormer'
+            channel_multiplier = 2
+            model_name = 'RestoreFormer'
+            url = 'https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/RestoreFormer.pth'
+        elif method.lower() == 'codeformer': # TODO:
+            arch = 'CodeFormer'
+            channel_multiplier = 2
+            model_name = 'CodeFormer'
+            url = 'https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth'
+        else:
+            arch = None
+            channel_multiplier = 2
+            model_name = None
+            url = None
+            # raise ValueError(f'Wrong model version {method}.')
 
 
     # ------------------------ set up background upsampler ------------------------
     # if bg_upsampler == 'realesrgan':
-    if bg_upsampler.lower().startswith('realesr'):
+    if bg_upsampler != None and bg_upsampler.lower().startswith('realesr'):
         
         if not torch.cuda.is_available():  # CPU
             import warnings
@@ -134,7 +135,7 @@ def enhancer_generator_no_len(images, method='gfpgan', bg_upsampler='realesrgan'
             r_img = cv2.cvtColor(r_img, cv2.COLOR_BGR2RGB)
             yield r_img
     # elif bg_upsampler == 'realesrgan':
-    elif bg_upsampler.lower().startswith('realesr'):
+    elif bg_upsampler != None and bg_upsampler.lower().startswith('realesr'):
         for idx in tqdm(range(len(images)), 'Full image Enhancer:'):
             
             img = cv2.cvtColor(images[idx], cv2.COLOR_RGB2BGR)
